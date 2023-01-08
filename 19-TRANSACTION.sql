@@ -1,0 +1,25 @@
+USE GameDB;
+
+SELECT *
+FROM accounts;
+
+DELETE accounts;
+
+INSERT INTO accounts VALUES(1, 'elamb', 100, GETUTCDATE());
+
+BEGIN TRAN;
+	INSERT INTO accounts VALUES(2, 'elamb2', 100, GETUTCDATE());
+--ROLLBACK;
+COMMIT;
+
+BEGIN TRY
+	BEGIN TRAN;
+		INSERT INTO accounts VALUES(1, 'elamb', 100, GETUTCDATE());
+		INSERT INTO accounts VALUES(2, 'elamb2', 100, GETUTCDATE());
+		COMMIT;
+END TRY
+BEGIN CATCH
+	IF @@TRANCOUNT > 0 -- 현재 활성화된 트랜잭션 수를 반환
+		ROLLBACK
+	PRINT('ROLLBACK')
+END CATCH
